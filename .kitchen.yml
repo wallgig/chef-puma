@@ -1,0 +1,21 @@
+---
+driver:
+  name: digitalocean
+  flavor: "512mb"
+  ssh_key_ids: <%= ENV['DO_SSH_KEY_IDS'] %>
+  require_chef_omnibus: latest
+busser:
+  sudo: false
+platforms:
+- name: ubuntu-12.04
+  run_list:
+  - recipe[apt]
+- name: debian-6.0
+  run_list:
+  - recipe[apt]
+suites:
+- name: default
+  run_list:
+  - recipe[puma]
+  - recipe[minitest-handler]
+  attributes:
