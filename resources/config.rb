@@ -24,7 +24,7 @@ actions :create, :delete
 
 attribute :path, :kind_of => String, :name_attribute => true
 attribute :template, :kind_of => String, :default => 'puma.rb.erb'
-attribute :cookbook, :kind_of => String, :default => 'puma-ng'
+attribute :cookbook, :kind_of => String, :default => 'puma'
 attribute :bind, :kind_of => String, :default => 'tcp://127.0.0.1:9292'
 attribute :working_dir, :kind_of => String, :default => nil
 attribute :rackup, :kind_of => String, :default => 'config.ru'

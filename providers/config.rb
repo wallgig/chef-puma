@@ -18,11 +18,9 @@ action :create do
   Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}") unless exists?
   template_variables = {}
   %w{
-      config_path
+      path
       owner
       group
-      directory
-      puma_directory
       working_dir
       rackup
       environment
@@ -36,12 +34,9 @@ action :create do
       thread_max
       bind
       control_app_bind
-      exec_prefix
       workers
       preload_app
       on_worker_boot
-      config_source
-      config_cookbook
       logrotate
     }.each do |a|
     template_variables[a.to_sym] = new_resource.send(a)
@@ -81,7 +76,7 @@ action :delete do
 end
 
 def load_current_resource
-  @current_resource = Chef::Resource::GunicornConfig.new(@new_resource.name)
+  @current_resource = Chef::Resource::PumaConfig.new(@new_resource.name)
   @current_resource.path(@new_resource.path)
   @current_resource
 end
