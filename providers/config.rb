@@ -99,9 +99,10 @@ action :create do
         :stdout_redirect => new_resource.stdout_redirect,
         :puma_dir => new_resource.puma_dir,
         :puma_config_file => new_resource.puma_config,
+        :puma_pidfile => new_resource.pidfile,
         :puma_statepath => new_resource.statepath,
-        :puma_socket_file => new_resource.bind.gsub('unix://', ''),
-        :puma_control_file => new_resource.control_app_bind.gsub('unix://', ''),
+        :puma_socket_file => new_resource.bind,
+        :puma_control_file => new_resource.control_app_bind,
         :bundle_exec => new_resource.bundle_exec,
         :owner => new_resource.owner,
         :group => new_resource.group

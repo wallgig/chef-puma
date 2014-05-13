@@ -8,8 +8,15 @@ exec 2>&1
 
 # remove pumactl.sock and puma.sock if existing, as puma doesn't overwrite and files may be
 # existing after server crash or if puma wasnt shutdown properly.
-rm -f "<%= @options[:puma_socket_file] %>"
-rm -f "<%= @options[:puma_control_file] %>"
+rm -f "<%= @options[:pidfile] %>"
+rm -f "<%= @options[:statepath] %>"
+<% if @options[:puma_socket_file].downcase.include?('unix') -%>
+rm -f <%= @options[:puma_socket_file].gsub!("unix://", '') %>
+<% end -%>
+<% if @options[:puma_control_file].downcase.include?('unix') -%>
+rm -f <%= @options[:puma_control_file].gsub!("unix://", '') %>
+<% end -%>
+
 cd "<%= @options[:working_dir] %>"
 
 # Start puma
