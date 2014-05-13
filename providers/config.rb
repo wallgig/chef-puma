@@ -14,18 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+def whyrun_supported?
+  true
+end
+
+use_inline_resources if defined?(use_inline_resources)
+
 action :create do
-  Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}") unless exists?
+  Chef::Log.info("Creating #{new_resource.name} at #{new_resource.puma_config}") unless puma_config_exist?
   template_variables = {}
   %w{
-      path
-      owner
       group
+      owner
+      directory
       working_dir
+      puma_dir
       rackup
       environment
       daemonize
       pidfile
+      statepath
+      activate_control_app
       stdout_redirect
       stderr_redirect
       output_append
@@ -37,52 +46,84 @@ action :create do
       workers
       preload_app
       on_worker_boot
-      logrotate
     }.each do |a|
     template_variables[a.to_sym] = new_resource.send(a)
   end
 
-  Chef::Log.debug("Using variables #{template_variables} to configure #{@new_resource}")
-
-  config_dir = ::File.dirname(new_resource.path)
-
-  d = directory config_dir do
-    recursive true
-    action :create
+  converge_by("Create puma dir #{new_resource.puma_dir}") do
+    directory new_resource.puma_dir do
+      owner new_resource.owner if new_resource.owner
+      group new_resource.group if new_resource.group
+      mode '0755'
+      recursive true
+      action :create
+    end
   end
 
-  t = template new_resource.path do
-    source new_resource.template
-    cookbook new_resource.cookbook
-    mode "0644"
-    owner new_resource.owner if new_resource.owner
-    group new_resource.group if new_resource.group
-    variables template_variables
+  converge_by("Create working dir #{new_resource.working_dir}") do
+    directory new_resource.working_dir do
+      owner new_resource.owner if new_resource.owner
+      group new_resource.group if new_resource.group
+      mode '0755'
+      recursive true
+      action :create
+    end
   end
 
-  new_resource.updated_by_last_action(d.updated_by_last_action? || t.updated_by_last_action?)
-end
+  converge_by("Render puma config template #{new_resource.puma_config}") do
+    template new_resource.puma_config do
+      source new_resource.template
+      cookbook new_resource.cookbook
+      mode '0644'
+      owner new_resource.owner if new_resource.owner
+      group new_resource.group if new_resource.group
+      variables template_variables
+    end
+  end
 
-action :delete do
-  if exists?
-    if ::File.writable?(@new_resource.path)
-      Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
-      ::File.delete(@new_resource.path)
-      new_resource.updated_by_last_action(true)
-    else
-      raise "Cannot delete #{@new_resource} at #{@new_resource.path}!"
+  converge_by("Create runit script #{new_resource.name}") do
+    run_context.include_recipe 'runit'
+    runit_service new_resource.name do
+      default_logger true
+      run_template_name 'puma'
+      log_template_name 'puma'
+      control_template_names(
+        'q' => 'puma'
+      )
+      cookbook 'puma'
+      owner new_resource.owner if new_resource.owner
+      group new_resource.group if new_resource.group
+      control ['q']
+      options(
+        :working_dir => new_resource.working_dir,
+        :stdout_redirect => new_resource.stdout_redirect,
+        :puma_dir => new_resource.puma_dir,
+        :puma_config_file => new_resource.puma_config,
+        :puma_statepath => new_resource.statepath,
+        :puma_socket_file => new_resource.bind.gsub('unix://', ''),
+        :puma_control_file => new_resource.control_app_bind.gsub('unix://', ''),
+        :bundle_exec => new_resource.bundle_exec,
+        :owner => new_resource.owner,
+        :group => new_resource.group,
+      )
     end
   end
 end
 
-def load_current_resource
-  @current_resource = Chef::Resource::PumaConfig.new(@new_resource.name)
-  @current_resource.path(@new_resource.path)
-  @current_resource
+action :delete do
+  if puma_config_exist?
+    if ::File.writable?(new_resource.puma_config)
+      Chef::Log.info("Deleting #{new_resource.name} at #{new_resource.puma_config}")
+      ::File.delete(new_resource.puma_config)
+      new_resource.updated_by_last_action(true)
+    else
+      raise "Cannot delete #{new_resource.name} at #{new_resource.puma_config}!"
+    end
+  end
 end
 
 private
 
-def exists?
-  ::File.exist?(@current_resource.path)
+def puma_config_exist?
+  ::File.exist?(new_resource.puma_config)
 end

@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+. /etc/profile
+
+# make sure the log directory exists
+mkdir -p "<%= @options[:puma_dir] %>"
+# change path to the log directory
+cd "<%= @options[:puma_dir] %>"
+# start logging
+exec svlogd -tt "<%= @options[:stdout_redirect] %>"

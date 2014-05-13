@@ -1,0 +1,15 @@
+#!/bin/sh -e
+
+# Redirect stderr so everything ends up in the log file
+exec 2>&1
+
+. /etc/profile
+
+# The command used when puma is asked to quit/stop/exit, overridden here, as runit normal signal will not work with puma
+cd '<%= @options[:working_dir] %>'
+
+<% if @options[:bundle_exec] -%>
+exec chpst -u <%= @options[:owner] %>:<%= @options[:group] %> bundle exec pumactl -S <%= @options[:puma_statepath] %> -S stop
+<% else -%>
+exec chpst -u <%= @options[:owner] %>:<%= @options[:group] %> pumactl -S <%= @options[:puma_statepath] %> -S stop
+<% end -%>

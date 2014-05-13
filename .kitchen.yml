@@ -1,20 +1,17 @@
 ---
-driver:
-  name: digitalocean
-  flavor: "512MB"
+driver_plugin: digitalocean
+driver_config:
+  flavor_id: 66
   require_chef_omnibus: latest
-busser:
-  sudo: false
+
 platforms:
-- name: ubuntu-12.04
-  run_list:
-  - recipe[apt]
 - name: debian-7.0
-  run_list:
-  - recipe[apt]
+- name: ubuntu-13.10
+
 suites:
 - name: default
   run_list:
   - recipe[puma-test]
-  - recipe[minitest-handler]
-  attributes:
+- name: puma-rails
+  run_list:
+    - recipe[puma-test::rails]

@@ -1,8 +1,8 @@
 site :opscode
+
 metadata
-cookbook 'apt'
-cookbook 'minitest-handler'
+
+cookbook 'ruby_install'
 cookbook 'build-essential'
-cookbook 'poise-ruby', git: 'https://github.com/poise/poise-ruby.git'
-cookbook 'puma-test', path: 'test/integration/cookbooks/puma-test'
+cookbook 'puma-test', path: 'test/fixtures/cookbooks/puma-test'
 

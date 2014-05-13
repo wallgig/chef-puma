@@ -16,13 +16,13 @@ directory "<%= @working_dir %>"
 # Load "path" as a rackup file.
 # The default is "config.ru".
 # rackup '/u/apps/lolcat/config.ru'
-<% if @rackup %>
+<%- if @rackup %>
 rackup "<%= @rackup %>"
-<% end %>
+<%- end %>
 
-<% if @preload_app %>
-  preload_app!
-<% end %>
+<%- if @preload_app %>
+preload_app!
+<%- end %>
 
 # Set the environment in which the rack's app will run. The value must be a string.
 # The default is "development".
@@ -43,7 +43,7 @@ pidfile  "<%= @pidfile %>"
 # Use "path" as the file to store the server info state. This is
 # used by "pumactl" to query and control the server.
 # state_path '/u/apps/lolcat/tmp/pids/puma.state'
-state_path "<%= @state_path %>"
+state_path "<%= @statepath %>"
 
 # Redirect STDOUT and STDERR to files specified. The 3rd parameter
 # ("append") specifies whether the output is appended, the default is
@@ -52,12 +52,11 @@ state_path "<%= @state_path %>"
 # stdout_redirect '/u/apps/lolcat/log/stdout', '/u/apps/lolcat/log/stderr', true
 stdout_redirect '<%= @stdout_redirect %>', '<%= @stderr_redirect %>', <%= @output_append %>
 
-
 # Disable request logging.
 # The default is "false".
-<% if @quiet %>
+<%- if @quiet %>
 quiet
-<% end %>
+<%- end %>
 
 # Configure "min" to be the minimum number of threads to use to answer
 # requests and "max" the maximum.
@@ -105,11 +104,11 @@ workers <%= @workers %>
 # on_worker_boot do
 #   puts 'On worker boot...'
 # end
-<% if @on_worker_boot %>
+<%- if @on_worker_boot %>
 on_worker_boot do
   <%= @on_worker_boot %>
 end
-<% end %>
+<%- end %>
 
 # === Puma control rack application ===
 
@@ -125,6 +124,6 @@ end
 # activate_control_app 'unix:///var/run/pumactl.sock'
 # activate_control_app 'unix:///var/run/pumactl.sock', { auth_token: '12345' }
 # activate_control_app 'unix:///var/run/pumactl.sock', { no_token: true }
-<% if @activate_control_app %>
+<%- if @activate_control_app %>
 activate_control_app "<%= @control_app_bind %>"
 <%- end %>

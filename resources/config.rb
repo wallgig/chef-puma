@@ -14,36 +14,69 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+actions :create, :delete
+default_action :create
+
+attribute :name, :kind_of => String, :name_attribute => true
+attribute :template, :kind_of => String, :default => 'puma.rb.erb'
+attribute :cookbook, :kind_of => String, :default => 'puma'
+attribute :rackup, :kind_of => String, :default => 'config.ru'
+attribute :environment, :kind_of => String, :default => 'production'
+attribute :daemonize, :kind_of => [TrueClass, FalseClass], :default => 'false'
+attribute :output_append, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :quiet, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :thread_min, :kind_of => Fixnum, :default => 0
+attribute :thread_max, :kind_of => Fixnum, :default => 16
+attribute :activate_control_app, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :workers, :kind_of => Fixnum, :default => 0
+attribute :preload_app, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :on_worker_boot, :kind_of => String, :default => nil
+attribute :bundle_exec, :kind_of => [TrueClass, FalseClass], :default => true
+
+attribute :owner, :regex => Chef::Config[:user_valid_regex], :default => 'www-data'
+attribute :group, :regex => Chef::Config[:group_valid_regex], :default => 'www-data'
 
 def initialize(*args)
   super
   @action = :create
 end
 
-actions :create, :delete
+def directory
+  ::File.join('/srv/apps', self.name)
+end
 
-attribute :path, :kind_of => String, :name_attribute => true
-attribute :template, :kind_of => String, :default => 'puma.rb.erb'
-attribute :cookbook, :kind_of => String, :default => 'puma'
-attribute :bind, :kind_of => String, :default => 'tcp://127.0.0.1:9292'
-attribute :working_dir, :kind_of => String, :default => nil
-attribute :rackup, :kind_of => String, :default => 'config.ru'
-attribute :environment, :kind_of => String, :default => 'production'
-attribute :daemonize, :kind_of => [TrueClass, FalseClass], :default => 'false'
-attribute :pidfile, :kind_of => String, :default => 'tmp/puma.pid'
-attribute :state_path, :kind_of => String, :default => 'tmp/puma.state'
-attribute :stdout_redirect, :kind_of => String, :default => 'log/puma_stdout.log'
-attribute :stderr_redirect, :kind_of => String, :default => 'log/puma_stderr.log'
-attribute :output_append, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :quiet, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :thread_min, :kind_of => Fixnum, :default => 0
-attribute :thread_max, :kind_of => Fixnum, :default => 16
-attribute :activate_control_app, :kind_of => [TrueClass, FalseClass], :default => true
-attribute :control_app_bind, :kind_of => String, :default => 'unix:///var/run/pumactl.sock'
-attribute :logrotate, :kind_of => [TrueClass, FalseClass], :default => true
-attribute :workers, :kind_of => Fixnum, :default => 0
-attribute :preload_app, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :on_worker_boot, :kind_of => String, :default => nil
+def working_dir
+  ::File.join(self.directory, '/current')
+end
 
-attribute :owner, :regex => Chef::Config[:user_valid_regex]
-attribute :group, :regex => Chef::Config[:group_valid_regex]
+def puma_dir
+  ::File.join(self.directory, '/shared/puma')
+end
+
+def puma_config
+  ::File.join(self.puma_dir, self.name + '.rb')
+end
+
+def statepath
+  ::File.join(self.puma_dir, "#{self.name}.state")
+end
+
+def bind
+  ::File.join("unix://#{self.puma_dir}", "#{self.name}.sock")
+end
+
+def control_app_bind
+  ::File.join("unix://#{self.puma_dir}", "#{self.name}_control.sock")
+end
+
+def pidfile
+  ::File.join(self.puma_dir, "#{self.name}.pid")
+end
+
+def stdout_redirect
+  ::File.join(self.puma_dir, '/stdout.log')
+end
+
+def stderr_redirect
+  ::File.join(self.puma_dir, '/stderr.log')
+end

@@ -1,0 +1,20 @@
+#!/bin/sh -e
+# Start puma service
+
+# Redirect stderr so everything ends up in the log file
+exec 2>&1
+
+. /etc/profile
+
+# remove pumactl.sock and puma.sock if existing, as puma doesn't overwrite and files may be
+# existing after server crash or if puma wasnt shutdown properly.
+rm -f "<%= @options[:puma_socket_file] %>"
+rm -f "<%= @options[:puma_control_file] %>"
+cd "<%= @options[:working_dir] %>"
+
+# Start puma
+<% if @options[:bundle_exec] -%>
+exec chpst -u <%= @options[:owner] %>:<%= @options[:group] %> bundle exec puma -C <%= @options[:puma_config_file] %>
+<% else -%>
+exec chpst -u <%= @options[:owner] %>:<%= @options[:group] %> puma -C <%= @options[:puma_config_file] %>
+<% end -%>

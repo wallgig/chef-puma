@@ -8,7 +8,7 @@ version          '0.1'
 
 recipe           "puma", "Install puma"
 
-%w{ runit logrotate }.each do |dep|
+%w{ runit ruby-install build-essential}.each do |dep|
   depends dep
 end
 
