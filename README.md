@@ -8,23 +8,31 @@ The cookbook will also setup scripts to support restarts and phased restarts.
 
 By default puma_config will enable monit monitoring and log rotation via logrotate.
 
-
 # Requirements
 
-This cookbook has only been tested on Ubuntu 10.04 and 12.04.
+## Chef
+
+Tested on chef 11
+
+## Cookbooks
 
 The following cookbooks are required:
 
 * [runit](http://github.com/hw-cookbooks/runit)
+* [logrotate](https://github.com/stevendanna/logrotate)
+
+## Platforms
+
+* Debian 7+
+* Ubuntu 13.10+
 
 # Usage
+
 Basic puma configuration using defaults based off the application name:
 
 `puma_config "app"`
 
 Custom config overriding app settings. In this example the configuration files and helper scripts will be placed in /srv/app/shared/puma.
-
-For example - in the following example to do a 'phased-restart' (zero downtime deploy) after deploying your code you would run the /srv/app/shared/puma/puma_phased_restart.sh script.
 
 ```ruby
 puma_config "app" do
@@ -33,6 +41,7 @@ puma_config "app" do
   thread_min 0
   thread_max 16
   workers 2
+  logrotate true
 end
 ```
 
@@ -64,7 +73,7 @@ See the `attributes/default.rb` for default values.
 
 # Issues
 
-Find a bug? Want a feature? Submit an [issue here](http://github.com/yourabi/chef-puma/issues). Patches welcome!
+Find a bug? Want a feature? Submit an [issue here](http://github.com/wallgig/chef-puma/issues). Patches welcome!
 
 # Contributing
 
@@ -74,7 +83,6 @@ Find a bug? Want a feature? Submit an [issue here](http://github.com/yourabi/che
 4. Write tests for your change (if applicable)
 5. Run the tests, ensuring they all pass
 6. Submit a Pull Request using Github
-
 
 # LICENSE & AUTHORS #
 
