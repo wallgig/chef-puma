@@ -1,5 +1,4 @@
-Puma Cookbook
-=============
+# Puma [![Build Status](https://secure.travis-ci.org/wallgig/chef-puma.png)](http://travis-ci.org/wallgig/chef-puma)
 
 Chef cookbook for the [puma](http://puma.io) server.
 
@@ -10,35 +9,34 @@ The cookbook will also setup scripts to support restarts and phased restarts.
 By default puma_config will enable monit monitoring and log rotation via logrotate.
 
 
-Requirements
-------------
+# Requirements
 
-monit, logrotate
+This cookbook has only been tested on Ubuntu 10.04 and 12.04.
 
+The following cookbooks are required:
 
-Usage
------
+* [runit](http://github.com/hw-cookbooks/runit)
+
+# Usage
 Basic puma configuration using defaults based off the application name:
 
-    puma_config "app"
-  
-Custom config overriding app settings. In this example the configuration files and helper scripts will be placed in /srv/app/shared/puma. 
+`puma_config "app"`
+
+Custom config overriding app settings. In this example the configuration files and helper scripts will be placed in /srv/app/shared/puma.
 
 For example - in the following example to do a 'phased-restart' (zero downtime deploy) after deploying your code you would run the /srv/app/shared/puma/puma_phased_restart.sh script.
 
-    puma_config "app" do
-      directory "/srv/app"
-      environment 'staging'
-      monit false
-      logrotate false
-      thread_min 0
-      thread_max 16
-      workers 2
-    end
+```ruby
+puma_config "app" do
+  directory "/srv/app"
+  environment 'staging'
+  thread_min 0
+  thread_max 16
+  workers 2
+end
+```
 
- 
-Common Settings
------
+# Common Settings
 
 directory: Working directory of your app. This is where config.ru is.
 
@@ -48,59 +46,42 @@ environment: (default = production)
 
 bind: defults to unix socket (at unix:///srv/app/shared/puma/app.sock) can speficy TCP socket instead such as "tcp://0.0.0.0:9292"
 
-exec_prefix: default bundle exec 
+exec_prefix: default bundle exec
 
-thread_min: min number of threads in puma threadpool 
+thread_min: min number of threads in puma threadpool
 
-thread_max: max number of threads in puma threadpool 
+thread_max: max number of threads in puma threadpool
 
 workers: number of worker processes defaults to 0, must be greater than 0 for phased restarts
 
-monit: (true) set to false to disable monit functionality
+# Attributes
 
-logrotate: (true) set to false to disable logrotate functionality
-
-Attributes
-==========
-
-See the `attributes/default.rb` for default values. 
-
+See the `attributes/default.rb` for default values.
 
 * `node['puma']['version']` - Version of puma to install
-  
 * `node['puma']['bundler_version']` - Version to bundler to install
+* `node['puma']['rubygems_location']` - The location to your `gem` binary.
 
+# Issues
 
-Issues
-------
 Find a bug? Want a feature? Submit an [issue here](http://github.com/yourabi/chef-puma/issues). Patches welcome!
 
-
-Contributing
-------------
+# Contributing
 
 1. Fork the repository on Github
-
 2. Create a named feature branch (like `add_component_x`)
- 
 3. Write you change
- 
 4. Write tests for your change (if applicable)
- 
 5. Run the tests, ensuring they all pass
-
 6. Submit a Pull Request using Github
 
 
-License and Authors
--------------------
+# LICENSE & AUTHORS #
 
-License: Apache
+* Authors:: Greg Fitzgerald (<greg@gregf.org>)
+* Authors:: Yousef Ourabi
 
-Authors: Yousef Ourabi
-
-About: This was originally developed for use at [Burstorm](http://www.burstorm.com)
-
+```
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -112,3 +93,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```
