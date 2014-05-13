@@ -42,41 +42,41 @@ def initialize(*args)
 end
 
 def directory
-  ::File.join('/srv/apps', self.name)
+  ::File.join('/srv/apps', name)
 end
 
 def working_dir
-  ::File.join(self.directory, '/current')
+  ::File.join(directory, '/current')
 end
 
 def puma_dir
-  ::File.join(self.directory, '/shared/puma')
+  ::File.join(directory, '/shared/puma')
 end
 
 def puma_config
-  ::File.join(self.puma_dir, self.name + '.rb')
+  ::File.join(puma_dir, name + '.rb')
 end
 
 def statepath
-  ::File.join(self.puma_dir, "#{self.name}.state")
+  ::File.join(puma_dir, "#{name}.state")
 end
 
 def bind
-  ::File.join("unix://#{self.puma_dir}", "#{self.name}.sock")
+  ::File.join("unix://#{puma_dir}", "#{name}.sock")
 end
 
 def control_app_bind
-  ::File.join("unix://#{self.puma_dir}", "#{self.name}_control.sock")
+  ::File.join("unix://#{puma_dir}", "#{name}_control.sock")
 end
 
 def pidfile
-  ::File.join(self.puma_dir, "#{self.name}.pid")
+  ::File.join(puma_dir, "#{name}.pid")
 end
 
 def stdout_redirect
-  ::File.join(self.puma_dir, '/stdout.log')
+  ::File.join(puma_dir, '/stdout.log')
 end
 
 def stderr_redirect
-  ::File.join(self.puma_dir, '/stderr.log')
+  ::File.join(puma_dir, '/stderr.log')
 end

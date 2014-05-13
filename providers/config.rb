@@ -23,30 +23,30 @@ use_inline_resources if defined?(use_inline_resources)
 action :create do
   Chef::Log.info("Creating #{new_resource.name} at #{new_resource.puma_config}") unless puma_config_exist?
   template_variables = {}
-  %w{
-      group
-      owner
-      directory
-      working_dir
-      puma_dir
-      rackup
-      environment
-      daemonize
-      pidfile
-      statepath
-      activate_control_app
-      stdout_redirect
-      stderr_redirect
-      output_append
-      quiet
-      thread_min
-      thread_max
-      bind
-      control_app_bind
-      workers
-      preload_app
-      on_worker_boot
-    }.each do |a|
+  %w(
+    group
+    owner
+    directory
+    working_dir
+    puma_dir
+    rackup
+    environment
+    daemonize
+    pidfile
+    statepath
+    activate_control_app
+    stdout_redirect
+    stderr_redirect
+    output_append
+    quiet
+    thread_min
+    thread_max
+    bind
+    control_app_bind
+    workers
+    preload_app
+    on_worker_boot
+    ).each do |a|
     template_variables[a.to_sym] = new_resource.send(a)
   end
 
@@ -104,7 +104,7 @@ action :create do
         :puma_control_file => new_resource.control_app_bind.gsub('unix://', ''),
         :bundle_exec => new_resource.bundle_exec,
         :owner => new_resource.owner,
-        :group => new_resource.group,
+        :group => new_resource.group
       )
     end
   end
@@ -117,7 +117,7 @@ action :delete do
       ::File.delete(new_resource.puma_config)
       new_resource.updated_by_last_action(true)
     else
-      raise "Cannot delete #{new_resource.name} at #{new_resource.puma_config}!"
+      fail "Cannot delete #{new_resource.name} at #{new_resource.puma_config}!"
     end
   end
 end
