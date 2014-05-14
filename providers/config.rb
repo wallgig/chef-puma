@@ -44,7 +44,9 @@ action :create do
     bind
     control_app_bind
     workers
+    worker_timeout
     preload_app
+    prune_bundler
     on_worker_boot
     ).each do |a|
     template_variables[a.to_sym] = new_resource.send(a)

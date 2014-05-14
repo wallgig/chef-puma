@@ -27,6 +27,7 @@ quiet
 threads <%= @thread_min %>, <%= @thread_max %>
 bind "<%= @bind %>"
 workers <%= @workers %>
+worker_timeout <%= @worker_timeout %>
 
 <%- if @on_worker_boot %>
 on_worker_boot do

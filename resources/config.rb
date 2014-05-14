@@ -29,6 +29,7 @@ attribute :thread_min, :kind_of => Fixnum, :default => 0
 attribute :thread_max, :kind_of => Fixnum, :default => 16
 attribute :activate_control_app, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :workers, :kind_of => Fixnum, :default => 0
+attribute :worker_timeout, :kind_of => Fixnum, :default => 60
 attribute :preload_app, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :prune_bundler, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :on_worker_boot, :kind_of => String, :default => nil
