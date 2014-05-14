@@ -108,19 +108,6 @@ action :create do
       )
     end
   end
-
-  converge_by("Create logrotate config #{new_resource.name}") do
-    if new_resource.logrotate
-      logrotate_app new_resource.name do
-        cookbook "logrotate"
-        frequency "daily"
-        path [new_resource.name]
-        rotate 30
-        size "5M"
-        options ["missingok", "compress", "delaycompress", "notifempty", "dateext"]
-      end
-    end
-  end
 end
 
 action :delete do

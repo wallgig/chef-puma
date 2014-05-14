@@ -4,10 +4,6 @@ Chef cookbook for the [puma](http://puma.io) server.
 
 The defaults assume you are deploying with capistrano and will write all configuration and logs to the shared/puma directory... However the configuration should be flexible enough to support any deployment setup.
 
-The cookbook will also setup scripts to support restarts and phased restarts.
-
-By default puma_config will enable monit monitoring and log rotation via logrotate.
-
 # Requirements
 
 ## Chef
@@ -19,7 +15,6 @@ Tested on chef 11
 The following cookbooks are required:
 
 * [runit](http://github.com/hw-cookbooks/runit)
-* [logrotate](https://github.com/stevendanna/logrotate)
 
 ## Platforms
 
@@ -41,7 +36,6 @@ puma_config "app" do
   thread_min 0
   thread_max 16
   workers 2
-  logrotate true
 end
 ```
 
