@@ -96,7 +96,6 @@ action :create do
       control ['q']
       options(
         :working_dir => new_resource.working_dir,
-        :stdout_redirect => new_resource.stdout_redirect,
         :puma_dir => new_resource.puma_dir,
         :puma_config_file => new_resource.puma_config,
         :puma_pidfile => new_resource.pidfile,
@@ -107,6 +106,19 @@ action :create do
         :owner => new_resource.owner,
         :group => new_resource.group
       )
+    end
+  end
+
+  converge_by("Create logrotate config #{new_resource.name}") do
+    if new_resource.logrotate
+      logrotate_app new_resource.name do
+        cookbook "logrotate"
+        frequency "daily"
+        path [new_resource.name]
+        rotate 30
+        size "5M"
+        options ["missingok", "compress", "delaycompress", "notifempty", "dateext"]
+      end
     end
   end
 end
