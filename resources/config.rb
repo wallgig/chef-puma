@@ -32,7 +32,8 @@ attribute :workers, :kind_of => Fixnum, :default => 0
 attribute :worker_timeout, :kind_of => Fixnum, :default => 60
 attribute :preload_app, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :prune_bundler, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :on_worker_boot, :kind_of => String, :default => nil
+attribute :on_worker_boot, :kind_of => [String, NilClass], :default => nil
+attribute :tag, :kind_of => [String, NilClass], :default => nil
 attribute :bundle_exec, :kind_of => [TrueClass, FalseClass], :default => true
 
 attribute :owner, :regex => Chef::Config[:user_valid_regex], :default => 'www-data'

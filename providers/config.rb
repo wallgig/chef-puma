@@ -47,6 +47,7 @@ action :create do
     worker_timeout
     preload_app
     prune_bundler
+    tag
     on_worker_boot
     ).each do |a|
     template_variables[a.to_sym] = new_resource.send(a)

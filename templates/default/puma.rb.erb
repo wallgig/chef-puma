@@ -2,6 +2,10 @@
 
 directory "<%= @working_dir %>"
 
+<%- if @tag %>
+tag <%= @tag %>
+<%- end %>
+
 <%= @app if @app %>
 
 <%- if @rackup %>
