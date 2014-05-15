@@ -86,7 +86,7 @@ action :create do
 
   converge_by("Create runit script #{new_resource.name}") do
     run_context.include_recipe 'runit'
-    runit_service new_resource.name do
+    runit_service "puma-#{new_resource.name}" do
       default_logger true
       run_template_name 'puma'
       log_template_name 'puma'
