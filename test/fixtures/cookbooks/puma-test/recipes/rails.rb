@@ -18,14 +18,14 @@ group 'www-data' do
   members 'www-data'
 end
 
-directory '/srv/apps/railstest/releases/' do
+directory '/srv/www/railstest/releases/' do
   owner 'www-data'
   group 'www-data'
   mode '0755'
   recursive true
 end
 
-git '/srv/apps/railstest/releases' do
+git '/srv/www/railstest/releases' do
   repository 'https://github.com/gregf/testapp.git'
   revision 'master'
   user 'www-data'
@@ -33,13 +33,13 @@ git '/srv/apps/railstest/releases' do
   action :sync
 end
 
-link '/srv/apps/railstest/current' do
-  to '/srv/apps/railstest/releases'
+link '/srv/www/railstest/current' do
+  to '/srv/www/railstest/releases'
 end
 
 gem_package 'bundler'
 
-directory '/srv/apps/railstest' do
+directory '/srv/www/railstest' do
   owner 'www-data'
   group 'www-data'
   mode '0755'
@@ -49,7 +49,7 @@ end
 
 bash 'bundle install' do
   user 'www-data'
-  cwd '/srv/apps/railstest/current'
+  cwd '/srv/www/railstest/current'
   code <<-EOH
   bundle install --jobs 2 --path vendor/bundle
   EOH
@@ -57,4 +57,7 @@ end
 
 include_recipe 'puma'
 
-puma_config 'railstest'
+puma_config 'railstest' do
+  directory '/srv/www/railstest'
+  workers 2
+end

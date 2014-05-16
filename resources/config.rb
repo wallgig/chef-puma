@@ -36,50 +36,21 @@ attribute :on_worker_boot, :kind_of => [String, NilClass], :default => nil
 attribute :tag, :kind_of => [String, NilClass], :default => nil
 attribute :bundle_exec, :kind_of => [TrueClass, FalseClass], :default => true
 
+attribute :directory, :kind_of => [String, NilClass], :default => nil
+attribute :working_dir, :kind_of => [String, NilClass], :default => nil
+attribute :puma_dir, :kind_of => [String, NilClass], :default => nil
+attribute :puma_config, :kind_of => [String, NilClass], :default => nil
+attribute :statepath, :kind_of => [String, NilClass], :default => nil
+attribute :bind, :kind_of => [String, NilClass], :default => nil
+attribute :control_app_bind, :kind_of => [String, NilClass], :default => nil
+attribute :pidfile, :kind_of => [String, NilClass], :default => nil
+attribute :stdout_redirect, :kind_of => [String, NilClass], :default => nil
+attribute :stderr_redirect, :kind_of => [String, NilClass], :default => nil
+
 attribute :owner, :regex => Chef::Config[:user_valid_regex], :default => 'www-data'
 attribute :group, :regex => Chef::Config[:group_valid_regex], :default => 'www-data'
 
 def initialize(*args)
   super
   @action = :create
-end
-
-def directory
-  ::File.join('/srv/apps', name)
-end
-
-def working_dir
-  ::File.join(directory, '/current')
-end
-
-def puma_dir
-  ::File.join(directory, '/shared/puma')
-end
-
-def puma_config
-  ::File.join(puma_dir, name + '.rb')
-end
-
-def statepath
-  ::File.join(puma_dir, "#{name}.state")
-end
-
-def bind
-  ::File.join("unix://#{puma_dir}", "#{name}.sock")
-end
-
-def control_app_bind
-  ::File.join("unix://#{puma_dir}", "#{name}_control.sock")
-end
-
-def pidfile
-  ::File.join(puma_dir, "#{name}.pid")
-end
-
-def stdout_redirect
-  ::File.join(puma_dir, '/stdout.log')
-end
-
-def stderr_redirect
-  ::File.join(puma_dir, '/stderr.log')
 end
