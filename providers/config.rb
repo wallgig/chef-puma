@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#def whyrun_supported?
-#  true
-#end
+def whyrun_supported?
+  true
+end
 
-#use_inline_resources if defined?(use_inline_resources)
+use_inline_resources if defined?(use_inline_resources)
 
 def root_directory
   if new_resource.directory
@@ -130,7 +130,7 @@ action :create do
       mode '0644'
       owner new_resource.owner if new_resource.owner
       group new_resource.group if new_resource.group
-      variables({
+      variables(
         :name => new_resource.name,
         :rackup => new_resource.rackup,
         :environment => new_resource.environment,
@@ -157,8 +157,8 @@ action :create do
         :control_app_bind => control_app_bind,
         :pidfile => pidfile,
         :stdout_redirect => stdout_redirect,
-        :stderr_redirect => stderr_redirect,
-      })
+        :stderr_redirect => stderr_redirect
+      )
     end
   end
 
