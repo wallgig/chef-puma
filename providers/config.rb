@@ -204,13 +204,17 @@ action :create do
 end
 
 action :delete do
-  if puma_config_exist?
-    if ::File.writable?(puma_config)
-      Chef::Log.info("Deleting #{new_resource.name} at #{puma_config}")
-      ::File.delete(puma_config)
-      new_resource.updated_by_last_action(true)
-    else
-      fail "Cannot delete #{new_resource.name} at #{puma_config}!"
+  converge_by("Disabling puma-#{new_resource.name}") do
+    run_context.include_recipe 'runit'
+    runit_service "puma-#{new_resource.name}" do
+      action :disable
+    end
+  end
+
+  converge_by("Deleting puma_dir #{puma_dir}") do
+    directory puma_dir do
+      recursive true
+      action :delete
     end
   end
 end

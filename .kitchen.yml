@@ -18,3 +18,6 @@ suites:
 - name: phased-restarts
   run_list:
     - recipe[puma-test::phased_restarts]
+- name: puma-delete
+  run_list:
+    - recipe[puma-test::delete]
