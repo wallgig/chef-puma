@@ -2,8 +2,6 @@
 
 Chef cookbook for the [puma](http://puma.io) server.
 
-The defaults assume you are deploying with capistrano and will write all configuration and logs to the shared/puma directory... However the configuration should be flexible enough to support any deployment setup.
-
 # Requirements
 
 ## Chef
@@ -21,17 +19,27 @@ The following cookbooks are required:
 * Debian 7+
 * Ubuntu 13.10+
 
-# Usage
+## Resources/Providers
 
-Basic puma configuration using defaults based off the application name:
+### sidekiq
 
-`puma_config "app"`
+This generates a puma configuration and creates a [runit](http://smarden.org/runit/) service. This cookbooks expects that you are deploying with
+capistrano, but should be flexible enough to tune for whatever you need.
 
-Custom config overriding app settings. In this example the configuration files and helper scripts will be placed in /srv/app/shared/puma.
+### Actions
+
+* :create create a named puma configuration, and service.
+* :delete disable a named puma service, and deletes the puma directory.
+
+### Examples
 
 ```ruby
 puma_config "app" do
-  directory "/srv/app"
+```
+
+```ruby
+puma_config "app" do
+  directory "/srv/www"
   environment 'staging'
   thread_min 0
   thread_max 16
@@ -39,23 +47,139 @@ puma_config "app" do
 end
 ```
 
-# Common Settings
+```ruby
+puma_config 'app' do
+  action :delete
+end
+```
 
-directory: Working directory of your app. This is where config.ru is.
-
-puma_directory: directory where sockets, state and logs will be stored. Defaults to <directory>/shared/puma
-
-environment: (default = production)
-
-bind: defults to unix socket (at unix:///srv/app/shared/puma/app.sock) can speficy TCP socket instead such as "tcp://0.0.0.0:9292"
-
-exec_prefix: default bundle exec
-
-thread_min: min number of threads in puma threadpool
-
-thread_max: max number of threads in puma threadpool
-
-workers: number of worker processes defaults to 0, must be greater than 0 for phased restarts
+### Attributes
+<table>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Default Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td><b>Name attribute:</b> The name of the puma instance.</td>
+      <td><code>nil</code></td>
+    </tr>
+    <tr>
+      <td>rackup</td>
+      <td>Rack file</td>
+      <td><code>config.ru</code></td>
+    </tr>
+    <tr>
+      <td>environment</td>
+      <td>Rails environment</td>
+      <td><code>production</code></td>
+    </tr>
+    <tr>
+      <td>daemonize</td>
+      <td>Wether or not to daemonize puma. Setting this to true will
+      break runit.</td>
+      <td><code>false</code></td>
+    </tr>
+    <tr>
+      <td>output_append</td>
+      <td>Append log output</td>
+      <td><code>false</code></td>
+    </tr>
+    <tr>
+      <td>quiet</td>
+      <td>Verbosity level of the puma daemon</td>
+      <td><code>false</code></td>
+    </tr>
+    <tr>
+      <td>thread_min</td>
+      <td>Minimum start threads</td>
+      <td><code>0</code></td>
+    </tr>
+    <tr>
+      <td>thread_max</td>
+      <td>Maximum number of threads</td>
+      <td><code>16</code></td>
+    </tr>
+    <tr>
+      <td>activate_control_app</td>
+      <td>Enables the puma control socket</td>
+      <td><code>true</code></td>
+    </tr>
+    <tr>
+      <td>workers</td>
+      <td>The number of puma workers</td>
+      <td><code>0</code></td>
+    </tr>
+    <tr>
+      <td>worker_timeout</td>
+      <td>Timeout for puma workers in seconds</td>
+      <td><code>30</code></td>
+    </tr>
+    <tr>
+      <td>preload_app</td>
+      <td>Should puma preload your application</td>
+      <td><code>true</code></td>
+    </tr>
+    <tr>
+      <td>prune_bundler</td>
+      <td>Allow workers to reload bundler context when master process
+      is issued a USR1 signal. Needs preload_app to be false.</td>
+      <td><code>false</code></td>
+    </tr>
+    <tr>
+      <td>on_worker_boot</td>
+      <td>Ruby code to run when a worker boots</td>
+      <td><code>nil</code></td>
+    </tr>
+    <tr>
+      <td>tag</td>
+      <td>Additional text to display in the process list</td>
+      <td><code>nil</code></td>
+    </tr>
+    <tr>
+      <td>bundle_exec</td>
+      <td>Should bundle exec be used to start puma</td>
+      <td><code>true</code></td>
+    </tr>
+    <tr>
+      <td>phased_restarts</td>
+      <td>Enables phased restarts. This requires you to disable
+      preload_app.</td>
+      <td><code>false</code></td>
+    </tr>
+    <tr>
+      <td>restart_interval</td>
+      <td>The minimum delay in second between automatic restarts</td>
+      <td><code>30</code></td>
+    </tr>
+    <tr>
+      <td>restart_count</td>
+      <td>The maximum number of automatic restarts allowed</td>
+      <td><code>3</code></td>
+    </tr>
+    <tr>
+      <td>clear_interval</td>
+      <td>Reset the restart count if `clear_interval` seconds have elapsed since
+      the last automatic restart</td>
+      <td><code>300</code></td>
+    </tr>
+    <tr>
+      <td>owner</td>
+      <td>The user puma is run as</td>
+      <td><code>www-data</code></td>
+    </tr>
+    <tr>
+      <td>group</td>
+      <td>The group puma is run as</td>
+      <td><code>www-data</code></td>
+    </tr>
+   </tr>
+  </tbody>
+</table>
 
 # Attributes
 
