@@ -21,7 +21,7 @@ The following cookbooks are required:
 
 ## Resources/Providers
 
-### sidekiq
+### puma_config
 
 This generates a puma configuration and creates a [runit](http://smarden.org/runit/) service. This cookbooks expects that you are deploying with
 capistrano, but should be flexible enough to tune for whatever you need.
