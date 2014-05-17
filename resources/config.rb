@@ -36,6 +36,11 @@ attribute :on_worker_boot, :kind_of => [String, NilClass], :default => nil
 attribute :tag, :kind_of => [String, NilClass], :default => nil
 attribute :bundle_exec, :kind_of => [TrueClass, FalseClass], :default => true
 
+attribute :phased_restarts, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :restart_interval, :kind_of => Fixnum, :default => 30
+attribute :restart_count, :kind_of => Fixnum, :default => 3
+attribute :clear_interval, :kind_of => Fixnum, :default => 300
+
 attribute :directory, :kind_of => [String, NilClass], :default => nil
 attribute :working_dir, :kind_of => [String, NilClass], :default => nil
 attribute :puma_dir, :kind_of => [String, NilClass], :default => nil

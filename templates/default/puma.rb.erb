@@ -1,44 +1,36 @@
 #!/usr/bin/env puma
 
 directory "<%= @working_dir %>"
-
-<%- if @tag %>
+<%- if @tag -%>
 tag <%= @tag %>
-<%- end %>
-
+<% end -%>
 <%= @app if @app %>
-
-<%- if @rackup %>
+<%- if @rackup -%>
 rackup "<%= @rackup %>"
-<%- end %>
-
-<%- if @preload_app %>
+<% end -%>
+<%- if @preload_app && @phased_restart == false -%>
 preload_app!
-<%- end %>
-
-<%- if @prune_bundler %>
+<% end -%>
+<%- if @prune_bundler -%>
 prune_bundler
-<%- end %>
-
+<%- end -%>
 environment "<%= @environment %>"
 daemonize <%= @daemonize %>
 pidfile  "<%= @pidfile %>"
 state_path "<%= @statepath %>"
 stdout_redirect '<%= @stdout_redirect %>', '<%= @stderr_redirect %>', <%= @output_append %>
-<%- if @quiet %>
+<%- if @quiet -%>
 quiet
-<%- end %>
+<%- end -%>
 threads <%= @thread_min %>, <%= @thread_max %>
 bind "<%= @bind %>"
 workers <%= @workers %>
 worker_timeout <%= @worker_timeout %>
-
-<%- if @on_worker_boot %>
+<%- if @on_worker_boot -%>
 on_worker_boot do
   <%= @on_worker_boot %>
 end
-<%- end %>
-
-<%- if @activate_control_app %>
+<%- end -%>
+<%- if @activate_control_app -%>
 activate_control_app "<%= @control_app_bind %>"
-<%- end %>
+<%- end -%>

@@ -15,3 +15,6 @@ suites:
 - name: puma-rails
   run_list:
     - recipe[puma-test::rails]
+- name: phased-restarts
+  run_list:
+    - recipe[puma-test::phased_restarts]

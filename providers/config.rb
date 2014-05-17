@@ -123,6 +123,10 @@ action :create do
     end
   end
 
+  if new_resource.preload_app && new_resource.phased_restarts
+    warn('preload_app is automatically disabled when phased_restarts are enabled. Set preload_app false to stop seeing this message')
+  end
+
   converge_by("Render puma config template #{puma_config}") do
     template puma_config do
       source new_resource.template
@@ -143,6 +147,7 @@ action :create do
         :workers => new_resource.workers,
         :worker_timeout => new_resource.worker_timeout,
         :preload_app => new_resource.preload_app,
+        :phased_restarts => new_resource.phased_restarts,
         :prune_bundler => new_resource.prune_bundler,
         :on_worker_boot => new_resource.on_worker_boot,
         :tag => new_resource.tag,
@@ -168,6 +173,8 @@ action :create do
       default_logger true
       run_template_name 'puma'
       log_template_name 'puma'
+      finish new_resource.phased_restarts
+      finish_script_template_name 'puma'
       control_template_names(
         'q' => 'puma'
       )
@@ -184,6 +191,11 @@ action :create do
         :puma_socket_file => bind,
         :puma_control_file => control_app_bind,
         :bundle_exec => new_resource.bundle_exec,
+        :service => new_resource.name,
+        :phased_restarts => new_resource.phased_restarts,
+        :restart_interval => new_resource.restart_interval,
+        :restart_count => new_resource.restart_count,
+        :clear_interval => new_resource.clear_interval,
         :owner => new_resource.owner,
         :group => new_resource.group
       )

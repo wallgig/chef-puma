@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Originally from https://github.com/erwbgy/puppet-runit/blob/fde6006e6d400f0c99b6ff0b1b63094207dc8783/templates/service/finish.erb
+
+# The following variables are set by Runit:
+#
+# EXIT_CODE: ./run's exit code
+#
+# EXIT_STATUS: The least significant byte of the exit status as determined by
+#  waitpid(2); for instance it is 0 if ./run exited normally, and the signal
+#  number if ./run was terminated by a signal.
+#
+# The following configuration variables must be set:
+#
+# MIN_AUTO_RESTART_INTERVAL: The minimum delay (in seconds) between automatic restarts
+#
+# MAX_AUTO_RESTART_COUNT: The maximum number of automatic restarts allowed
+#
+# AUTO_RESTART_COUNT_CLEAR_INTERVAL: Reset the restart count if
+#  AUTO_RESTART_COUNT_CLEAR_INTERVAL seconds have elapsed since the last
+#  automatic restart.
+#
+# Creates two new files in the service directory:
+#
+#   last_finish - the Unix time (seconds since 1970) when the ./finish script
+#                 last ran
+#
+#   restart_count - the number of automatic restarts that have taken place
+#
+# These files must be removed BEFORE the service is cleanly shut down.
+
+### Configuration
+
+# ./run's exit code
+EXIT_CODE=$1
+ 
+# The least significant byte of the exit status as determined by waitpid(2);
+# for instance it is 0 if ./run exited normally, and the signal number if
+# ./run was terminated by a signal.
+EXIT_STATUS=$2
+ 
+# The minimum delay (in seconds) between automatic restarts
+MIN_AUTO_RESTART_INTERVAL=<%= @options[:restart_interval] %>
+ 
+# The maximum number of automatic restarts allowed
+MAX_AUTO_RESTART_COUNT=<%= @options[:restart_count] %>
+ 
+# Reset the restart count if AUTO_RESTART_COUNT_CLEAR_INTERVAL seconds
+# have elapsed since the last automatic restart.
+AUTO_RESTART_COUNT_CLEAR_INTERVAL=<%= @options[:clear_interval] %>
+ 
+export EXIT_CODE EXIT_STATUS MIN_AUTO_RESTART_INTERVAL MAX_AUTO_RESTART_COUNT AUTO_RESTART_COUNT_CLEAR_INTERVAL
+
+### Normally no changes should be made after this point
+ 
+echo "<%= @options[:service] %> finish; exit code: $EXIT_CODE; exit status: $EXIT_STATUS"
+
+if test $EXIT_CODE -eq 0 -a $EXIT_STATUS -eq 0
+then
+    echo "Clean shutdown."
+    sv down .
+    exit 0
+fi
+
+NOW=$(date +%s)
+
+# Determine when the finish script last ran
+if test -r last_finish
+then
+    LAST_FINISH=$(head -1 last_finish)
+    INTERVAL=$(expr $NOW - $LAST_FINISH)
+fi
+echo $NOW > last_finish
+
+# Remove the restart_count file if AUTO_RESTART_COUNT_CLEAR_INTERVAL seconds
+# have elapsed since the last automatic restart.
+if test $INTERVAL -gt $AUTO_RESTART_COUNT_CLEAR_INTERVAL
+then
+    echo "The last automatic restart was $INTERVAL seconds ago."
+    echo "Since this is greater than $AUTO_RESTART_COUNT_CLEAR_INTERVAL the restart count is being reset."
+    rm -f restart_count
+fi
+
+# Determine how many automatic restarts we have had
+# and then increment this value by one
+if test -r restart_count
+then
+    RESTART_COUNT=$(head -1 restart_count)
+    RESTART_COUNT=$(expr $RESTART_COUNT + 1)
+else
+    RESTART_COUNT=1
+fi
+echo $RESTART_COUNT > restart_count
+
+# Check that we have not exceeded the maximum number of automatic restarts
+if test $RESTART_COUNT -gt $MAX_AUTO_RESTART_COUNT
+then
+    echo "Reached the limit of $MAX_AUTO_RESTART_COUNT automatic restarts."
+    echo "The last automatic restart was within $AUTO_RESTART_COUNT_CLEAR_INTERVAL seconds."
+    echo "Manual intervention required.  No further automatic restarts will be attempted."
+    sv down .
+    exit 0
+fi
+
+if test -n "$INTERVAL"
+then
+    SLEEP_TIME=$(expr $MIN_AUTO_RESTART_INTERVAL - $INTERVAL)
+    if test $SLEEP_TIME -gt 0
+    then
+        echo "$INTERVAL seconds have elapsed since the last automatic restart."
+        echo "Sleeping for $SLEEP_TIME seconds before the next automatic restart ..."
+        sleep $SLEEP_TIME
+    fi
+fi
+
+exit 0

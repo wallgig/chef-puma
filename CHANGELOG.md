@@ -1,18 +1,10 @@
-# CHANGELOG for puma
+# Changelog
 
-This file is used to list changes made in each version of puma.
+## 0.2 (May 16, 2014
 
-## 0.1.4:
-* Remove dateformat option to logrotate to be compatible with current logrotate cookbook
+* Fixed a bug were some attributes of the lwrp were not changable
+* Introduced phased restarts
 
-## 0.1.3:
-* Many bug fixes. Remove non ASCII characters, add timeout to Monit, make path to RubyGems configurable
+## 0.1 (May 14, 2014)
 
-## 0.1.0:
-
-* Initial release of puma
-
-- - -
-Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
-
-The [Github Flavored Markdown page](http://github.github.com/github-flavored-markdown/) describes the differences between markdown on github and standard markdown.
+* Initial public release
