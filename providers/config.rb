@@ -164,6 +164,7 @@ action :create do
         :stdout_redirect => stdout_redirect,
         :stderr_redirect => stderr_redirect
       )
+      notifies :restart, "runit_service[puma-#{new_resource.name}]", :delayed
     end
   end
 
