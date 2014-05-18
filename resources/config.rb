@@ -35,6 +35,7 @@ attribute :prune_bundler, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :on_worker_boot, :kind_of => [String, NilClass], :default => nil
 attribute :tag, :kind_of => [String, NilClass], :default => nil
 attribute :bundle_exec, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :logrotate, :kind_of => [TrueClass, FalseClass], :default => true
 
 attribute :phased_restarts, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :restart_interval, :kind_of => Fixnum, :default => 30

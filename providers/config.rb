@@ -202,6 +202,18 @@ action :create do
       )
     end
   end
+
+  converge_by("Create logroate config #{new_resource.name}") do
+    logrotate_app "puma-#{new_resource.name}" do
+      cookbook "logrotate"
+      path [stdout_redirect, stderr_redirect]
+      frequency "daily"
+      rotate 30
+      size "5M"
+      options ["missingok", "compress", "delaycompress", "notifempty", "dateext"]
+      only_if { new_resource.logrotate }
+    end
+  end
 end
 
 action :delete do

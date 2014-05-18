@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.3.1 (May 17, 2014)
+## v0.4.0 (May 17, 2014)
 
+* Add logrotate option for rotating puma logs
 * Fix typo preventing preload_app from being enabled
 
 ## v0.3.0 (May 17, 2014)
