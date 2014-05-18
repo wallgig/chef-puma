@@ -103,6 +103,8 @@ end
 action :create do
   Chef::Log.info("Creating #{new_resource.name} at #{puma_config}") unless puma_config_exist?
 
+  log_files = [stdout_redirect, stderr_redirect]
+
   converge_by("Create puma dir #{puma_dir}") do
     directory puma_dir do
       owner new_resource.owner if new_resource.owner
@@ -204,13 +206,15 @@ action :create do
   end
 
   converge_by("Create logroate config #{new_resource.name}") do
+    run_context.include_recipe 'logrotate'
     logrotate_app "puma-#{new_resource.name}" do
-      cookbook "logrotate"
-      path [stdout_redirect, stderr_redirect]
-      frequency "daily"
+      cookbook 'logrotate'
+      path log_files
+      frequency 'daily'
       rotate 30
-      size "5M"
-      options ["missingok", "compress", "delaycompress", "notifempty", "dateext"]
+      size '5M'
+      create    '644 root adm'
+      options ['missingok', 'compress', 'delaycompress', 'notifempty', 'dateext']
       only_if { new_resource.logrotate }
     end
   end
