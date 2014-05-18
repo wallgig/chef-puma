@@ -8,7 +8,7 @@ tag <%= @tag %>
 <%- if @rackup -%>
 rackup "<%= @rackup %>"
 <% end -%>
-<%- if @preload_app && @phased_restart == false -%>
+<%- if @preload_app && @phased_restarts == false -%>
 preload_app!
 <% end -%>
 <%- if @prune_bundler -%>
