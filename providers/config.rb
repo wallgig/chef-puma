@@ -104,6 +104,8 @@ action :create do
   Chef::Log.info("Creating #{new_resource.name} at #{puma_config}") unless puma_config_exist?
 
   log_files = [stdout_redirect, stderr_redirect]
+  l_owner = new_resource.owner
+  l_group = new_resource.group
 
   converge_by("Create puma dir #{puma_dir}") do
     directory puma_dir do
@@ -213,8 +215,8 @@ action :create do
       frequency 'daily'
       rotate 30
       size '5M'
-      create    '644 root adm'
-      options ['missingok', 'compress', 'delaycompress', 'notifempty', 'dateext']
+      create "640 #{l_owner} #{l_group}"
+      options %w(missingok compress delaycompress notifempty dateext)
       only_if { new_resource.logrotate }
     end
   end
